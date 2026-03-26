@@ -7,11 +7,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
       - uses: ./
         if: always()
         with:
           github-token: ${{ github.token }}
           webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          timezone: America/New_York
+          timezone: Europe/Berlin

@@ -50,7 +50,8 @@ export const getOctokitCommit = () => {
 
 export const submitNotification = (webhookBody: WebhookBody) => {
   const webhookUri = getInput(`webhook-uri`, { required: true });
-  const webhookBodyJson = JSON.stringify(webhookBody, undefined, 2);
+  const webookBodyWithType = { type: 'AdaptiveCard', ...webhookBody };
+  const webhookBodyJson = JSON.stringify(webookBodyWithType, undefined, 2);
 
   return fetch(webhookUri, {
     body: webhookBodyJson,

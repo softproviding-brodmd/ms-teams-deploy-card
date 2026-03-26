@@ -110,7 +110,6 @@
       "anonymous": "never",
       "named": "never"
     } ],
-    "quotes": [ 2, "backtick" ],
     "semi": [ 2, "always" ],
     "semi-spacing": 2,
     "semi-style": [ 2, "last" ],
@@ -203,9 +202,6 @@
         "@typescript-eslint/prefer-for-of": 2,
         "@typescript-eslint/prefer-function-type": 2,
         "quotes": 0,
-        "@typescript-eslint/quotes": [ 2, "backtick", {
-          "avoidEscape": true
-        } ],
         "require-await": 0,
         "@typescript-eslint/require-await": 2,
         "semi": 0,
