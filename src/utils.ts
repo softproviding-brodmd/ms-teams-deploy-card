@@ -10,17 +10,18 @@ import { formatCozyLayout } from './layouts/cozy';
 import { formatCompleteLayout } from './layouts/complete';
 import { CustomAction, WorkflowRunStatus } from './types';
 
-export const escapeMarkdownTokens = (text: string) => text
-  .replace(/\n {1,}/g, `\n `)
-  .replace(/_/g, `\\_`)
-  .replace(/\*/g, `\\*`)
-  .replace(/\|/g, `\\|`)
-  .replace(/#/g, `\\#`)
-  .replace(/-/g, `\\-`)
-  .replace(/>/g, `\\>`);
+export const escapeMarkdownTokens = (text: string) =>
+  text
+    .replace(/\n {1,}/g, `\n `)
+    .replace(/_/g, `\\_`)
+    .replace(/\*/g, `\\*`)
+    .replace(/\|/g, `\\|`)
+    .replace(/#/g, `\\#`)
+    .replace(/-/g, `\\-`)
+    .replace(/>/g, `\\>`);
 
 export const getRunInformation = () => {
-  const [ owner, repo ] = (process.env.GITHUB_REPOSITORY || ``).split(`/`);
+  const [owner, repo] = (process.env.GITHUB_REPOSITORY || ``).split(`/`);
   const branch = process.env.GITHUB_REF?.replace(`refs/heads/`, ``);
   const repoUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`;
   return {
@@ -50,13 +51,18 @@ export const getOctokitCommit = () => {
 
 export const submitNotification = (webhookBody: WebhookBody) => {
   const webhookUri = getInput(`webhook-uri`, { required: true });
-  const webookBodyWithType = { type: 'AdaptiveCard', ...webhookBody };
+  const webookBodyWithType = {
+    type: 'AdaptiveCard',
+    $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
+    version: '1.4',
+    ...webhookBody,
+  };
   const webhookBodyJson = JSON.stringify(webookBodyWithType, undefined, 2);
 
   return fetch(webhookUri, {
     body: webhookBodyJson,
     headers: {
-      "Content-Type": `application/json`,
+      'Content-Type': `application/json`,
     },
     method: `POST`,
   })
@@ -69,9 +75,9 @@ export const submitNotification = (webhookBody: WebhookBody) => {
 };
 
 export const formatAndNotify = async (
-  state: "start" | "exit",
+  state: 'start' | 'exit',
   conclusion = `in_progress`,
-  elapsedSeconds?: number,
+  elapsedSeconds?: number
 ) => {
   let webhookBody: WebhookBody;
   const { data: commit } = await getOctokitCommit();
@@ -104,7 +110,7 @@ export const getWorkflowRunStatus = async (): Promise<WorkflowRunStatus> => {
     run_id: parseInt(runInfo.runId || `1`),
   });
 
-  let lastStep: components["schemas"]["job"]["steps"][0];
+  let lastStep: components['schemas']['job']['steps'][0];
   let jobStartDate: string;
 
   /**
@@ -138,7 +144,9 @@ export const getWorkflowRunStatus = async (): Promise<WorkflowRunStatus> => {
       }
     }
     // Some step/job has failed. Get out from here.
-    if (abort) { break; }
+    if (abort) {
+      break;
+    }
   }
 
   const startTime = moment(jobStartDate, moment.ISO_8601);
@@ -153,14 +161,10 @@ export const getWorkflowRunStatus = async (): Promise<WorkflowRunStatus> => {
 export const renderActions = (statusUrl: string, diffUrl: string) => {
   const actions: PotentialAction[] = [];
   if (getInput(`enable-view-status-action`).toLowerCase() === `true`) {
-    actions.push(
-      new PotentialAction(getInput(`view-status-action-text`), [ statusUrl ]),
-    );
+    actions.push(new PotentialAction(getInput(`view-status-action-text`), [statusUrl]));
   }
   if (getInput(`enable-review-diffs-action`).toLowerCase() === `true`) {
-    actions.push(
-      new PotentialAction(getInput(`review-diffs-action-text`), [ diffUrl ]),
-    );
+    actions.push(new PotentialAction(getInput(`review-diffs-action-text`), [diffUrl]));
   }
 
   // Set custom actions
@@ -170,13 +174,13 @@ export const renderActions = (statusUrl: string, diffUrl: string) => {
       let customActionsCounter = 0;
       const customActionsList = yaml.parse(customActions) as CustomAction[];
       if (Array.isArray(customActionsList)) {
-        customActionsList.forEach((action) => {
+        customActionsList.forEach(action => {
           if (
             action.text !== undefined &&
             action.url !== undefined &&
             action.url.match(/https?:\/\/\S+/g)
           ) {
-            actions.push(new PotentialAction(action.text, [ action.url ]));
+            actions.push(new PotentialAction(action.text, [action.url]));
             customActionsCounter += 1;
           }
         });

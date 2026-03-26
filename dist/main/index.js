@@ -58705,12 +58705,17 @@ const getOctokitCommit = () => {
 };
 const submitNotification = (webhookBody) => {
     const webhookUri = getInput(`webhook-uri`, { required: true });
-    const webookBodyWithType = { type: 'AdaptiveCard', ...webhookBody };
+    const webookBodyWithType = {
+        type: 'AdaptiveCard',
+        $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
+        version: '1.4',
+        ...webhookBody,
+    };
     const webhookBodyJson = JSON.stringify(webookBodyWithType, undefined, 2);
     return fetch(webhookUri, {
         body: webhookBodyJson,
         headers: {
-            "Content-Type": `application/json`,
+            'Content-Type': `application/json`,
         },
         method: `POST`,
     })
@@ -58788,7 +58793,7 @@ const renderActions = (statusUrl, diffUrl) => {
             let customActionsCounter = 0;
             const customActionsList = yaml_dist.parse(customActions);
             if (Array.isArray(customActionsList)) {
-                customActionsList.forEach((action) => {
+                customActionsList.forEach(action => {
                     if (action.text !== undefined &&
                         action.url !== undefined &&
                         action.url.match(/https?:\/\/\S+/g)) {
